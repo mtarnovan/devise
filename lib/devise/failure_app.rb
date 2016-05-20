@@ -137,15 +137,12 @@ module Devise
       opts  = {}
       route = route(scope)
       opts[:format] = request_format unless skip_format?
+      opts[:script_name] = nil
 
       config = Rails.application.config
 
-      if config.respond_to?(:relative_url_root)
-        # Rails 4.2 goes into an infinite loop if opts[:script_name] is unset
-        rails_4_2 = (Rails::VERSION::MAJOR >= 4) && (Rails::VERSION::MINOR >= 2)
-        if config.relative_url_root.present? || rails_4_2
-          opts[:script_name] = config.relative_url_root
-        end
+      if config.respond_to?(:relative_url_root) && config.relative_url_root.present?
+        opts[:script_name] = config.relative_url_root
       end
 
       router_name = Devise.mappings[scope].router_name || Devise.available_router_name
